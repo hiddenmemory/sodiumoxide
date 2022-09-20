@@ -149,6 +149,7 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
     let build_compiler = cc::Build::new().get_compiler();
     let mut compiler = build_compiler.path().to_str().unwrap().to_string();
     let mut cflags = build_compiler.cflags_env().into_string().unwrap();
+    let mut ldflags = String::new();
     let mut host_arg = format!("--host={}", target);
     let mut cross_compiling = target != env::var("HOST").unwrap();
     if target.contains("-ios") {
@@ -198,12 +199,6 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
                 cflags += &format!(" -mios-simulator-version-min={}", ios_simulator_version_min);
                 host_arg = "--host=arm-apple-darwin10".to_string();
             }
-            "aarch64-apple-ios-macabi" => {
-                cflags += " -arch arm64";
-                cflags += &format!(" -isysroot {}", sdk_dir_mac_os);
-                cflags += " --target=arm64-apple-ios-macabi";
-                host_arg = "--host=arm-apple-darwin10".to_string();
-            }
             "armv7-apple-ios" => {
                 cflags += " -arch armv7";
                 cflags += &format!(" -isysroot {}", sdk_dir_ios);
@@ -230,11 +225,17 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
                 cflags += &format!(" -mios-simulator-version-min={}", ios_simulator_version_min);
                 host_arg = "--host=x86_64-apple-darwin10".to_string();
             }
-            "x86_64-apple-ios-macabi" => {
-                cflags += " -arch x86_64";
+            "aarch64-apple-ios-macabi" => {
+                cflags += " -arch arm64 -target=arm64-apple-ios-macabi";
                 cflags += &format!(" -isysroot {}", sdk_dir_mac_os);
-                cflags += " --target=x86_64-apple-ios-macabi";
-                host_arg = "--host=x86_64-apple-darwin10".to_string();
+                ldflags += " -arch arm64 -target=arm64-apple-ios-macabi";
+                host_arg = "--host=arm-apple-ios".to_string();
+            }
+            "x86_64-apple-ios-macabi" => {
+                cflags += " -arch x86_64 -target=x86_64-apple-ios-macabi";
+                cflags += &format!(" -isysroot {}", sdk_dir_mac_os);
+                ldflags += " -arch x86_64 -target=x86_64-apple-ios-macabi";
+                host_arg = "--host=x86_64-apple-ios".to_string();
             }
             _ => panic!("Unknown iOS build target: {}", target),
         }
@@ -262,6 +263,9 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
     }
     if !cflags.is_empty() {
         configure_cmd.env("CFLAGS", &cflags);
+    }
+    if !ldflags.is_empty() {
+        configure_cmd.env("LDFLAGS", &ldflags);
     }
     if env::var("SODIUM_DISABLE_PIE").is_ok() {
         configure_cmd.arg("--disable-pie");
