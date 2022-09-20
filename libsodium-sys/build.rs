@@ -173,6 +173,11 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
             .to_str()
             .unwrap()
             .to_string();
+        let sdk_dir_macOS = Path::new(&xcode_dir)
+            .join("Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
+            .to_str()
+            .unwrap()
+            .to_string();
 
         // Min versions
         let ios_simulator_version_min = "6.0.0";
@@ -195,7 +200,7 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
             }
             "aarch64-apple-ios-macabi" => {
                 cflags += " -arch arm64";
-                cflags += &format!(" -isysroot {}", sdk_dir_simulator);
+                cflags += &format!(" -isysroot {}", sdk_dir_macOS);
                 cflags += &format!(" -mios-version-min={}", ios_version_min);
                 host_arg = "--host=arm-apple-darwin10".to_string();
             }
@@ -227,7 +232,7 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
             }
             "x86_64-apple-ios-macabi" => {
                 cflags += " -arch x86_64";
-                cflags += &format!(" -isysroot {}", sdk_dir_simulator);
+                cflags += &format!(" -isysroot {}", sdk_dir_macOS);
                 cflags += &format!(" -mios-version-min={}", ios_version_min);
                 host_arg = "--host=x86_64-apple-darwin10".to_string();
             }
