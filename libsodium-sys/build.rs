@@ -193,6 +193,12 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
                 cflags += &format!(" -mios-simulator-version-min={}", ios_simulator_version_min);
                 host_arg = "--host=arm-apple-darwin10".to_string();
             }
+            "aarch64-apple-ios-macabi" => {
+                cflags += " -arch arm64";
+                cflags += &format!(" -isysroot {}", sdk_dir_simulator);
+                cflags += &format!(" -mios-version-min={}", ios_version_min);
+                host_arg = "--host=arm-apple-darwin10".to_string();
+            }
             "armv7-apple-ios" => {
                 cflags += " -arch armv7";
                 cflags += &format!(" -isysroot {}", sdk_dir_ios);
@@ -217,6 +223,12 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
                 cflags += " -arch x86_64";
                 cflags += &format!(" -isysroot {}", sdk_dir_simulator);
                 cflags += &format!(" -mios-simulator-version-min={}", ios_simulator_version_min);
+                host_arg = "--host=x86_64-apple-darwin10".to_string();
+            }
+            "x86_64-apple-ios-macabi" => {
+                cflags += " -arch x86_64";
+                cflags += &format!(" -isysroot {}", sdk_dir_simulator);
+                cflags += &format!(" -mios-version-min={}", ios_version_min);
                 host_arg = "--host=x86_64-apple-darwin10".to_string();
             }
             _ => panic!("Unknown iOS build target: {}", target),
