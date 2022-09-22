@@ -226,15 +226,17 @@ fn make_libsodium(target: &str, source_dir: &Path, install_dir: &Path) -> PathBu
                 host_arg = "--host=x86_64-apple-darwin10".to_string();
             }
             "aarch64-apple-ios-macabi" => {
-                cflags += " -arch arm64 -target=arm64-apple-ios-macabi";
+                cflags += " -arch arm64 -target arm64-apple-ios13.1-macabi";
                 cflags += &format!(" -isysroot {}", sdk_dir_mac_os);
-                ldflags += " -arch arm64 -target=arm64-apple-ios-macabi";
+                ldflags += " -arch arm64 -target arm64-apple-ios13.1-macabi";
+                ldflags += &format!(" -isysroot {}", sdk_dir_mac_os);
                 host_arg = "--host=arm-apple-ios".to_string();
             }
             "x86_64-apple-ios-macabi" => {
-                cflags += " -arch x86_64 -target=x86_64-apple-ios-macabi";
+                cflags += " -arch x86_64 -target x86_64-apple-ios13.1-macabi";
                 cflags += &format!(" -isysroot {}", sdk_dir_mac_os);
-                ldflags += " -arch x86_64 -target=x86_64-apple-ios-macabi";
+                ldflags += " -arch x86_64 -target x86_64-apple-ios13.1-macabi";
+                ldflags += &format!(" -isysroot {}", sdk_dir_mac_os);
                 host_arg = "--host=x86_64-apple-ios".to_string();
             }
             _ => panic!("Unknown iOS build target: {}", target),
